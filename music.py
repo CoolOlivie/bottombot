@@ -449,16 +449,11 @@ class Music(commands.Cog, wavelink.WavelinkMixin):
             return await ctx.send('No songs were found with that query. Please try again.', delete_after=15)
 
         if isinstance(tracks, wavelink.TrackPlaylist):
-            for track in tracks.tracks:
-                track = Track(track.id, track.info, requester=ctx.author)
-                await player.queue.put(track)
-
-            await ctx.send(f'```ini\nAdded the playlist {tracks.data["playlistInfo"]["name"]}'
-                           f' with {len(tracks.tracks)} songs to the queue.\n```', delete_after=15)
-        else:
-            track = Track(tracks[0].id, tracks[0].info, requester=ctx.author)
-            await ctx.send(f'```ini\nAdded {track.title} to the Queue\n```', delete_after=15)
-            await player.queue.put(track)
+            tracks = tracks.tracks
+            
+        track = Track(tracks[0].id, tracks[0].info, requester=ctx.author)
+        await ctx.send(f'```ini\nAdded {track.title} to the Queue\n```', delete_after=15)
+        await player.queue.put(track)
 
         if not player.is_playing:
             await player.do_next()
